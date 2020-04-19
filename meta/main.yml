@@ -4,17 +4,17 @@
 
 galaxy_info:
   role_name: ansible-role-ipv6
-  author: Jonas Mauer
-  description: Ansible role for setting up ipv6.
+  author: jam82
+  description: Ansible role for enabling or disabling ipv6.
   company: ''
 
   # If the issue tracker for your role is not on github, uncomment the
   # next line and provide a value
-  # issue_tracker_url: http://example.com/issue/tracker
+  issue_tracker_url: https://github.com/jam82/ansible-role-ipv6/issues
 
   license: MIT
 
-  min_ansible_version: 2.7
+  min_ansible_version: 2.8
 
   # If this a Container Enabled role, provide the minimum Ansible Container version.
   # min_ansible_container_version:
