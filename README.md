@@ -32,26 +32,24 @@ Variables and defaults for this role:
 # The default pattern of {role_name}_enabled is unhandy here...
 ipv6_role_enabled: False
 
-# Disable IPv6 via sysctl by default.
-# This only results to no IPv6 addresses being assigned to any interface.
-# The kernel module is still active, if this is your os default.
-ipv6_disable_sysctl: True
-
-# List of interfaces which should be configured via sysctl.
-# This enables you to disable IPv6 on specified interfaces only.
-# If empty (default), then all interfaces in ansible_interfaces
-# plus 'all', 'default' and 'lo' are used, otherwise only listed ones.
-# NOTE: Only applies if ipv6_disable_grub and ipv6_disable_kernel are False.
-ipv6_only_interfaces: []
-
 # Disable IPv6 via kernel parameter in the grub command line
 ipv6_disable_grub: False
 
-# Blacklist the IPv6 kernel module the ipv6 kernel module, if not built-in.
+# Reboot immediately after GRUB_CMDLINE_LINUX changed
+ipv6_reboot_after_grub_change: False
+
+# Blacklist the IPv6 kernel module the ipv6 kernel module, if not built-in
+# and for os_family=RedHat set NETWORKING_IPV6 and IPV6INIT to "no".
 # NOTE: This setting is ignored when ipv6 module is built-in to the kernel.
-#       This is the fact with most modern os verisons.
-#       So you can leave it on safely to disable RedHat ifcfg settings for IPv6.
+#       This is true for most modern operating systems, so you can leave it
+#       enabled safely to disable RedHat ifcfg settings for IPv6.
 ipv6_disable_module: True
+
+# Disable IPv6 via sysctl by default.
+# This only results to no IPv6 addresses being assigned to any interface.
+# The kernel module is still active, if this is your os default.
+# NOTE: When ipv6_disable_grub=true this has no effect.
+ipv6_disable_sysctl: True
 ```
 
 ## Dependencies
