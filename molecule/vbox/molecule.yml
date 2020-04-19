@@ -1,0 +1,92 @@
+---
+# role: ansible-role-ipv6
+# file: molecule/vbox/molecule.yml
+
+dependency:
+  name: galaxy
+  options:
+    role-file: requirements.yml
+driver:
+  name: vagrant
+  provider:
+    name: virtualbox
+    type: virtualbox
+lint: |
+  set -e
+  yamllint .
+  ansible-lint
+  flake8
+platforms:
+  - name: ipv6-alpine310
+    box: "generic/alpine310"
+    cpus: 2
+    memory: 1024
+  - name: ipv6-amazonlinux2
+    box: "bento/amazonlinux-2"
+    cpus: 2
+    memory: 1024
+  - name: ipv6-arch
+    box: "archlinux/archlinux"
+    cpus: 2
+    memory: 1024
+  - name: ipv6-centos7
+    box: "centos/7"
+    cpus: 2
+    memory: 1024
+  - name: ipv6-centos8
+    box: "centos/8"
+    cpus: 2
+    memory: 1024
+  - name: ipv6-debian9
+    box: "debian/stretch64"
+    cpus: 2
+    memory: 1024
+  - name: ipv6-debian10
+    box: "debian/buster64"
+    cpus: 2
+    memory: 1024
+  - name: ipv6-fedora31
+    box: "fedora/31-cloud-base"
+    cpus: 2
+    memory: 1024
+  - name: ipv6-suse-leap-15
+    box: "bento/opensuse-leap-15"
+    cpus: 2
+    memory: 1024
+  - name: ipv6-oracle7
+    box: "generic/oracle7"
+    cpus: 2
+    memory: 1024
+  - name: ipv6-oracle8
+    box: "generic/oracle8"
+    cpus: 2
+    memory: 1024
+  - name: ipv6-ubuntu1804
+    box: "ubuntu/bionic64"
+    cpus: 2
+    memory: 1024
+  - name: ipv6-ubuntu2004
+    box: "ubuntu/focal64"
+    cpus: 2
+    memory: 1024
+provisioner:
+  name: ansible
+  log: True
+  playbooks:
+    prepare: ../resources/playbooks/prepare.yml
+    converge: ../resources/playbooks/converge.yml
+  inventory:
+    group_vars:
+      all:
+        ipv6_role_enabled: True
+        ipv6_disable_module: True
+        ipv6_disable_grub: True
+        ipv6_reboot_after_grub_change: True
+verifier:
+  name: testinfra
+  env:
+    PYTHONWARNINGS: "ignore"
+  directory: ../resources/tests
+  options:
+    v: True
+    sudo: True

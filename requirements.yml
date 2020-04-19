@@ -1,0 +1,6 @@
+---
+# file: requirements.yml
+
+- src: https://github.com/jam82/ansible-role-hosts.git
+  name: hosts
+  version: master

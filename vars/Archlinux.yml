@@ -1,0 +1,13 @@
+---
+# role: ansible-role-ipv6
+# file: vars/Archlinux.yml
+
+ipv6_make_grubcfg_cmd: 'grub-mkconfig'
+ipv6_make_grubcfg_outfile: '/boot/grub/grub.cfg'
+
+ipv6_modprobe:
+  path: '/etc/modprobe.d/ipv6.conf'
+  entry: 'blacklist ipv6'
+
+ipv6_networking_services:
+  - NetworkManager

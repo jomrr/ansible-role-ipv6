@@ -1,0 +1,7 @@
+---
+# role: ansible-role-ipv6
+# file: vars/Suse.yml
+
+ipv6_modprobe:
+  path: '/etc/modprobe.d/ipv6.conf'
+  entry: 'blacklist ipv6'

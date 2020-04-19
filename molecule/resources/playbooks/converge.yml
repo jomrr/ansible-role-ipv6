@@ -1,0 +1,12 @@
+---
+# role: ansible-role-ipv6
+# file: molecule/resources/playbooks/converge.yml
+
+- name: Converge
+  hosts: all
+  become: True
+  vars:
+    hosts_role_enabled: True
+  roles:
+    - role: ansible-role-ipv6
+    - role: hosts

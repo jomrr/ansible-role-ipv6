@@ -1,0 +1,12 @@
+---
+# role: ansible-role-ipv6
+# file: vars/Alpine.yml
+
+# just in case grub is installed on alpine
+# if syslinux is used the corresponding task is skipped
+ipv6_make_grubcfg_cmd: 'grub-mkconfig'
+ipv6_make_grubcfg_outfile: '/boot/grub/grub.cfg'
+
+ipv6_modprobe:
+  path: '/etc/modprobe.d/ipv6.conf'
+  entry: 'blacklist ipv6'
