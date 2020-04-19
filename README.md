@@ -54,7 +54,7 @@ ipv6_disable_sysctl: True
 
 ## Dependencies
 
-None.
+- ansible-role-hosts (optional)
 
 ## Example Playbook
 
