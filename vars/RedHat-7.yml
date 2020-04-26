@@ -1,7 +1,0 @@
----
-# role: ansible-role-ipv6
-# file: vars/RedHat.yml
-
-ipv6_networking_services:
-  - network
-  - NetworkManager

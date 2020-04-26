@@ -16,13 +16,22 @@
   loop_control:
     loop_var: vars_file
 
+- name: "Install packages for role ansible-role-ipv6"
+  package:
+    name: "{{ ipv6_packages }}"
+    state: present
+
 - name: "Set fact for modprobe handler"
   set_fact:
     ipv6_modprobe_options: "{{ ipv6_disable_module | ternary('-r', '') }}"
 
 - name: "Check if kernel module ipv6 is builtin"
   shell: |
-    test $(cat /lib/modules/$(uname -r)/modules.builtin | grep ipv6.ko | wc -l) > 0 && echo 1 || echo 0
+    set -o pipefail && \
+    test $(cat /lib/modules/$(uname -r)/modules.builtin | grep ipv6.ko | \
+    wc -l) > 0 && echo 1 || echo 0
+  args:
+    executable: /bin/bash
   register: ipv6_check_builtin
   changed_when: False
 
@@ -59,11 +68,10 @@
     backup: yes
     create: yes
   loop: "{{ ipv6_ifcfg.files | product(ipv6_network_scripts) | list }}"
-  notify: restart networking
   when: ansible_os_family == 'RedHat'
 
 - name: "Check if grub config exists"
-  stat: 
+  stat:
     path: /etc/default/grub
   register: ipv6_grub_config
 
@@ -74,10 +82,10 @@
     replace: 'GRUB_CMDLINE_LINUX="\1 ipv6.disable={{ ipv6_disable_grub | ternary(1,0) }}\2"'
     backup: yes
   register: ipv6_grub_cmdline_changed
-  when: ipv6_grub_config.stat.exists and not in_container
+  when: ipv6_grub_config.stat.exists and not inside_container
 
 - name: "Check if /proc/sys/net/ipv6/conf/all exists"
-  stat: 
+  stat:
     path: /proc/sys/net/ipv6/conf/all
   register: ipv6_net_conf_path
 
@@ -86,7 +94,7 @@
     path: /etc/sysctl.d/40-ipv6.conf
     state: absent
   when: (ipv6_disable_grub or not ipv6_net_conf_path.stat.exists)
-    and not in_container
+    and not inside_container
 
 - name: "Reboot after changing kernel paramters in GRUB_CMDLINE_LINUX"
   block:
@@ -106,7 +114,7 @@
         delay: 5
         timeout: 300
       when: ipv6_reboot_after_grub_change
-  when: ipv6_grub_cmdline_changed is changed and not in_container
+  when: ipv6_grub_cmdline_changed is changed and not inside_container
 
 - name: "{{ ipv6_disable_sysctl | ternary('Disable', 'Enable') }} IPv6 via sysctl"
   sysctl:

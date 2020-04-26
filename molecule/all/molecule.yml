@@ -14,13 +14,6 @@ lint: |
   ansible-lint
   flake8
 platforms:
-  - name: ipv6-alpine311
-    image: "jam82/molecule-alpine:3.11"
-    pre_build_image: True
-    privileged: True
-    tmpfs:
-      - /tmp
-      - /run
   - name: ipv6-alpine
     image: "jam82/molecule-alpine:latest"
     pre_build_image: True
@@ -38,7 +31,7 @@ platforms:
     volumes:
       - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
   - name: ipv6-arch
-    image: "jam82/molecule-arch:latest"
+    image: "jam82/molecule-archlinux:latest"
     pre_build_image: True
     privileged: True
     tmpfs:
@@ -89,26 +82,8 @@ platforms:
       - /run
     volumes:
       - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
-  - name: ipv6-debian
-    image: "jam82/molecule-debian:latest"
-    pre_build_image: True
-    privileged: True
-    tmpfs:
-      - /tmp
-      - /run
-    volumes:
-      - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
   - name: ipv6-opensuse15
     image: "jam82/molecule-opensuse:15"
-    pre_build_image: True
-    privileged: True
-    tmpfs:
-      - /tmp
-      - /run
-    volumes:
-      - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
-  - name: ipv6-opensuse
-    image: "jam82/molecule-opensuse:latest"
     pre_build_image: True
     privileged: True
     tmpfs:
@@ -150,15 +125,6 @@ platforms:
       - /run
     volumes:
       - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
-  - name: ipv6-oraclelinux
-    image: "jam82/molecule-oraclelinux:latest"
-    pre_build_image: True
-    privileged: True
-    tmpfs:
-      - /tmp
-      - /run
-    volumes:
-      - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
   - name: ipv6-ubuntu1604
     image: "jam82/molecule-ubuntu:16.04"
     pre_build_image: True
@@ -177,8 +143,8 @@ platforms:
       - /run
     volumes:
       - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
-  - name: ipv6-ubuntu
-    image: "jam82/molecule-ubuntu:latest"
+  - name: ipv6-ubuntu2004
+    image: "jam82/molecule-ubuntu:20.04"
     pre_build_image: True
     privileged: True
     tmpfs:

@@ -4,9 +4,3 @@
 
 - name: modprobe ipv6
   command: "modprobe {{ ipv6_modprobe_options }} ipv6"
-
-- name: restart networking
-  service:
-    name: "{{ item }}"
-    state: restarted
-  loop: "{{ ipv6_networking_services }}"

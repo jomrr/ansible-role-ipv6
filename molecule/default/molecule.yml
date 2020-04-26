@@ -15,7 +15,7 @@ lint: |
   flake8
 platforms:
   - name: ipv6-default
-    image: ${MOLECULE_DIST:-"jam82/molecule-ubuntu:18.04"}
+    image: ${MOLECULE_DIST:-"jam82/molecule-amazonlinux:latest"}
     command: ${MOLECULE_DOCKER_CMD:-""}
     pre_build_image: True
     privileged: True
