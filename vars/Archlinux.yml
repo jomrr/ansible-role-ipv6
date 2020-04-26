@@ -2,6 +2,9 @@
 # role: ansible-role-ipv6
 # file: vars/Archlinux.yml
 
+ipv6_packages:
+  - procps-ng
+
 ipv6_make_grubcfg_cmd: 'grub-mkconfig'
 ipv6_make_grubcfg_outfile: '/boot/grub/grub.cfg'
 

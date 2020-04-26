@@ -16,6 +16,11 @@
   loop_control:
     loop_var: vars_file
 
+- name: "Install packages for role ansible-role-ipv6"
+  package:
+    name: "{{ ipv6_packages }}"
+    state: present
+
 - name: "Set fact for modprobe handler"
   set_fact:
     ipv6_modprobe_options: "{{ ipv6_disable_module | ternary('-r', '') }}"

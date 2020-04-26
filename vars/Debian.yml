@@ -2,6 +2,9 @@
 # role: ansible-role-ipv6
 # file: vars/Debian.yml
 
+ipv6_packages:
+  - procps
+
 ipv6_make_grubcfg_cmd: 'update-grub'
 ipv6_make_grubcfg_outfile: '/boot/grub/grub.cfg'
 

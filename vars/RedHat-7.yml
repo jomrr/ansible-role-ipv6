@@ -1,6 +1,9 @@
 ---
 # role: ansible-role-ipv6
-# file: vars/RedHat.yml
+# file: vars/RedHat-7.yml
+
+ipv6_packages:
+  - procps-ng
 
 ipv6_networking_services:
   - network
