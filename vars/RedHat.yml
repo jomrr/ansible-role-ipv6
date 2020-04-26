@@ -16,6 +16,3 @@ ipv6_network_scripts:
     line: "NETWORKING_IPV6=\"{{ ipv6_network_scripts_state }}\""
   - regexp: "IPV6INIT=.*"
     line: "IPV6INIT=\"{{ ipv6_network_scripts_state }}\""
-
-ipv6_networking_services:
-  - network

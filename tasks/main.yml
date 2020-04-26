@@ -14,7 +14,7 @@
 
 - name: "Set fact inside_container"
   set_fact:
-    in_container: "{{ (in_cgroup.stdout == 0) | ternary(True,False) }}"
+    inside_container: "{{ (in_cgroup.stdout == 0) | ternary(True,False) }}"
 
 - name: Import tasks for role ansible-role-ipv6
   import_tasks: tasks.yml

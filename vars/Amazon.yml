@@ -4,6 +4,3 @@
 
 ipv6_packages:
   - procps-ng
-
-ipv6_networking_services:
-  - network
