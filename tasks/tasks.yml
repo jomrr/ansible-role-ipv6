@@ -22,7 +22,11 @@
 
 - name: "Check if kernel module ipv6 is builtin"
   shell: |
-    test $(cat /lib/modules/$(uname -r)/modules.builtin | grep ipv6.ko | wc -l) > 0 && echo 1 || echo 0
+    set -o pipefail && \
+    test $(cat /lib/modules/$(uname -r)/modules.builtin | grep ipv6.ko | \
+    wc -l) > 0 && echo 1 || echo 0
+  args:
+    executable: /bin/bash
   register: ipv6_check_builtin
   changed_when: False
 
@@ -63,7 +67,7 @@
   when: ansible_os_family == 'RedHat'
 
 - name: "Check if grub config exists"
-  stat: 
+  stat:
     path: /etc/default/grub
   register: ipv6_grub_config
 
@@ -77,7 +81,7 @@
   when: ipv6_grub_config.stat.exists and not in_container
 
 - name: "Check if /proc/sys/net/ipv6/conf/all exists"
-  stat: 
+  stat:
     path: /proc/sys/net/ipv6/conf/all
   register: ipv6_net_conf_path
 

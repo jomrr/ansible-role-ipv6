@@ -5,7 +5,10 @@
 # NOTE: ansible_virtualization_type is not always reliable
 - name: "Check if running inside container"
   shell: |
+    set -o pipefail && \
     grep 'docker\|lxc\|podman' /proc/1/cgroup | wc -l
+  args:
+    executable: /bin/bash
   changed_when: False
   register: in_cgroup
 
