@@ -2,19 +2,9 @@
 # role: ansible-role-ipv6
 # file: tasks/main.yml
 
-# NOTE: ansible_virtualization_type is not always reliable
-- name: "Check if running inside container"
-  shell: |
-    set -o pipefail && \
-    grep 'docker\|lxc\|podman' /proc/1/cgroup | wc -l
-  args:
-    executable: /bin/bash
-  changed_when: False
-  register: in_cgroup
-
 - name: "Set fact inside_container"
   set_fact:
-    inside_container: "{{ (in_cgroup.stdout == 0) | ternary(True,False) }}"
+    inside_container: "{{ (ansible_virtualization_role == 'guest' and ansible_virtualization_type in ['docker', 'lxc', 'podman']) | bool }}"
 
 - name: Import tasks for role ansible-role-ipv6
   import_tasks: tasks.yml

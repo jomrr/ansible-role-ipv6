@@ -2,10 +2,10 @@
 # role: ansible-role-ipv6
 # file: tasks/tasks.yml
 
-- name: Set os_family dependent variables
+- name: "Set os_family dependent variables"
   include_vars: '{{ ansible_os_family }}.yml'
 
-- name: Set distribution dependent variables
+- name: "Set distribution dependent variables"
   include_vars: '{{ vars_file }}'
   with_first_found:
     - files:
@@ -70,51 +70,65 @@
   loop: "{{ ipv6_ifcfg.files | product(ipv6_network_scripts) | list }}"
   when: ansible_os_family == 'RedHat'
 
-- name: "Check if grub config exists"
-  stat:
-    path: /etc/default/grub
-  register: ipv6_grub_config
-
 - name: "{{ ipv6_disable_grub | ternary('Disable', 'Enable') }} IPv6 in grub cmdline"
-  replace:
-    dest: /etc/default/grub
-    regexp: '^GRUB_CMDLINE_LINUX="(.*?) ipv6.disable=[0-9]+(.*?)"'
-    replace: 'GRUB_CMDLINE_LINUX="\1 ipv6.disable={{ ipv6_disable_grub | ternary(1,0) }}\2"'
-    backup: yes
-  register: ipv6_grub_cmdline_changed
-  when: ipv6_grub_config.stat.exists and not inside_container
-
-- name: "Check if /proc/sys/net/ipv6/conf/all exists"
-  stat:
-    path: /proc/sys/net/ipv6/conf/all
-  register: ipv6_net_conf_path
-
-- name: "Remove /etc/sysctl.d/40-ipv6.conf if ipv6.disable=1 in GRUB_CMDLINE_LINUX"
-  file:
-    path: /etc/sysctl.d/40-ipv6.conf
-    state: absent
-  when: (ipv6_disable_grub or not ipv6_net_conf_path.stat.exists)
-    and not inside_container
-
-- name: "Reboot after changing kernel paramters in GRUB_CMDLINE_LINUX"
   block:
-    - name: "Make grubcfg"
-      command: "{{ ipv6_make_grubcfg_cmd }} -o {{ ipv6_make_grubcfg_outfile }}"
+    - name: "Check if /etc/default/grub exists"
+      stat:
+        path: /etc/default/grub
+      register: ipv6_grub_config
 
-    - name: "Reboot"
-      shell: "sleep 2 && reboot"
-      async: 1
-      poll: 0
-      when: ipv6_reboot_after_grub_change
+    - name: "Check if /etc/default/grub contains ipv6.disable"
+      shell: "grep 'GRUB_CMDLINE_LINUX=.*ipv6.disable=.*' /etc/default/grub | wc -l"
+      register: ipv6_grub_config_present
+      changed_when: False
+      when: ipv6_grub_config.stat.exists
 
-    - name: "Wait for the reboot to complete"
-      wait_for_connection:
-        connect_timeout: 30
-        sleep: 5
-        delay: 5
-        timeout: 300
-      when: ipv6_reboot_after_grub_change
-  when: ipv6_grub_cmdline_changed is changed and not inside_container
+    - name: "Insert ipv6.disable option in grub cmdline"
+      replace:
+        dest: /etc/default/grub
+        regexp: '^GRUB_CMDLINE_LINUX="(.*?)"$'
+        replace: 'GRUB_CMDLINE_LINUX="\1 ipv6.disable={{ ipv6_disable_grub | ternary(1,0) }}"'
+        backup: yes
+      register: ipv6_grub_cmdline_insert
+      when: ipv6_grub_config.stat.exists and ipv6_grub_config_present.stdout | int == 0
+
+    - name: "Modify ipv6.disable option in grub cmdline"
+      replace:
+        dest: /etc/default/grub
+        regexp: '^GRUB_CMDLINE_LINUX="(.*?)(ipv6.disable=[0-9])(.*?)"$'
+        replace: 'GRUB_CMDLINE_LINUX="\1ipv6.disable={{ ipv6_disable_grub | ternary(1,0) }}\3"'
+        backup: yes
+      register: ipv6_grub_cmdline_changed
+      when: ipv6_grub_config.stat.exists and ipv6_grub_config_present.stdout | int > 0
+
+    - name: "Check if /proc/sys/net/ipv6/conf/all exists"
+      stat:
+        path: /proc/sys/net/ipv6/conf/all
+      register: ipv6_net_conf_path
+
+    - name: "Remove /etc/sysctl.d/40-ipv6.conf if /proc/sys/net/ipv6 not present"
+      file:
+        path: /etc/sysctl.d/40-ipv6.conf
+        state: absent
+      when: (ipv6_disable_grub or not ipv6_net_conf_path.stat.exists)
+
+    - name: "Make grub config and optionally reboot when something changed"
+      block:
+        - name: "Make grub config"
+          command: "{{ ipv6_make_grubcfg_cmd }} -o {{ ipv6_make_grubcfg_outfile }}"
+
+        - name: "Reboot"
+          reboot:
+          when: ipv6_reboot_after_grub_change
+
+        - name: "{{ ipv6_disable_sysctl | ternary('Disable', 'Enable') }} IPv6 via sysctl"
+          sysctl:
+            name: net.ipv6.conf.all.disable_ipv6
+            value: "{{ ipv6_disable_sysctl | ternary(1, 0) }}"
+            sysctl_set: yes
+          when: not ipv6_reboot_after_grub_change and ipv6_net_conf_path.stat.exists
+      when: ipv6_grub_cmdline_insert is changed or ipv6_grub_cmdline_changed is changed
+  when: not inside_container
 
 - name: "{{ ipv6_disable_sysctl | ternary('Disable', 'Enable') }} IPv6 via sysctl"
   sysctl:

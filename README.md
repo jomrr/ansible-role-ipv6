@@ -63,10 +63,11 @@ ipv6_disable_sysctl: True
 # role: ansible-role-ipv6
 # file: site.yml
 
-- hosts: ipv6_systems
+- hosts: all
   become: True
   vars:
     ipv6_role_enabled: True
+    ipv6_disable_grub: True
   roles:
     - role: ansible-role-ipv6
 ```
