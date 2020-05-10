@@ -70,6 +70,11 @@
   loop: "{{ ipv6_ifcfg.files | product(ipv6_network_scripts) | list }}"
   when: ansible_os_family == 'RedHat'
 
+- name: "Check if /proc/sys/net/ipv6/conf/all exists"
+  stat:
+    path: /proc/sys/net/ipv6/conf/all
+  register: ipv6_net_conf_path
+
 - name: "{{ ipv6_disable_grub | ternary('Disable', 'Enable') }} IPv6 in grub cmdline"
   block:
     - name: "Check if /etc/default/grub exists"
@@ -101,11 +106,6 @@
       register: ipv6_grub_cmdline_changed
       when: ipv6_grub_config.stat.exists and ipv6_grub_config_present.stdout | int > 0
 
-    - name: "Check if /proc/sys/net/ipv6/conf/all exists"
-      stat:
-        path: /proc/sys/net/ipv6/conf/all
-      register: ipv6_net_conf_path
-
     - name: "Remove /etc/sysctl.d/40-ipv6.conf if /proc/sys/net/ipv6 not present"
       file:
         path: /etc/sysctl.d/40-ipv6.conf
@@ -130,7 +130,7 @@
       when: ipv6_grub_cmdline_insert is changed or ipv6_grub_cmdline_changed is changed
   when: not inside_container
 
-- name: "{{ ipv6_disable_sysctl | ternary('Disable', 'Enable') }} IPv6 via sysctl"
+- name: "{{ ipv6_disable_sysctl | ternary('Disable', 'Enable') }} IPv6 via sysctl (persistent)"
   sysctl:
     name: net.ipv6.conf.all.disable_ipv6
     value: "{{ ipv6_disable_sysctl | ternary(1, 0) }}"
