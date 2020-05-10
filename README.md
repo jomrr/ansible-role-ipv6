@@ -1,5 +1,7 @@
 # ansible-role-ipv6
 
+![GitHub](https://img.shields.io/github/license/jam82/ansible-role-ipv6) [![Build Status](https://travis-ci.org/jam82/ansible-role-ipv6.svg?branch=master)](https://travis-ci.org/jam82/ansible-role-ipv6)
+
 **Ansible role for enabling or disabling ipv6.**
 
 ## Supported Platforms
@@ -63,10 +65,11 @@ ipv6_disable_sysctl: True
 # role: ansible-role-ipv6
 # file: site.yml
 
-- hosts: ipv6_systems
+- hosts: all
   become: True
   vars:
     ipv6_role_enabled: True
+    ipv6_disable_grub: True
   roles:
     - role: ansible-role-ipv6
 ```

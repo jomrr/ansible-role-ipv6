@@ -1,0 +1,18 @@
+---
+# role: ansible-role-ipv6
+# file: vars/RedHat.yml
+
+ipv6_packages:
+  - procps-ng
+
+ipv6_modprobe:
+  path: '/etc/modprobe.d/ipv6.conf'
+  entry: 'install ipv6 /bin/true'
+
+ipv6_network_scripts_state: "{{ ipv6_disable_module | ternary('no', 'yes') }}"
+
+ipv6_network_scripts:
+  - regexp: 'NETWORKING_IPV6=.*'
+    line: "NETWORKING_IPV6={{ ipv6_network_scripts_state }}"
+  - regexp: "IPV6INIT=.*"
+    line: "IPV6INIT={{ ipv6_network_scripts_state }}"

@@ -45,8 +45,8 @@ platforms:
     box: "debian/buster64"
     cpus: 2
     memory: 1024
-  - name: ipv6-fedora31
-    box: "fedora/31-cloud-base"
+  - name: ipv6-fedora32
+    box: "fedora/32-cloud-base"
     cpus: 2
     memory: 1024
   - name: ipv6-suse-leap-15
@@ -81,7 +81,7 @@ provisioner:
         ipv6_role_enabled: True
         ipv6_disable_module: True
         ipv6_disable_grub: True
-        ipv6_reboot_after_grub_change: True
+        ipv6_reboot_after_grub_change: False
 verifier:
   name: testinfra
   env:
