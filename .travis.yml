@@ -4,7 +4,7 @@
 
 language: python
 
-python: 
+python:
   - "3.9"
 
 services: docker

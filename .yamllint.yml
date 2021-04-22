@@ -38,3 +38,4 @@ ignore: |
   .cache/
   .tox/
   .vscode/
+  .travis.yml
