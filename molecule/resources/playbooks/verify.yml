@@ -9,4 +9,4 @@
   - name: "Verify no IPv6 addresses"
     assert:
       that:
-        - ansible_all_ipv6_addresses | length == 0
+        - ansible_all_ipv6_addresses | default([]) | length == 0
