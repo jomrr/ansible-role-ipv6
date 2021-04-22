@@ -29,7 +29,7 @@ env:
 
 install:
   - pip install --upgrade pip
-  - pip tox
+  - pip install tox
 
 script:
   - tox --parallel
