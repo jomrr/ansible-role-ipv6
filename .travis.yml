@@ -2,10 +2,11 @@
 # role: ansible-role-ipv6
 # file: .travis.yml
 
-os: linux
-dist: focal
 language: python
-python: "3.9"
+
+python: 
+  - "3.9"
+
 services: docker
 
 env:
@@ -27,8 +28,10 @@ env:
     - MOLECULE_DIST: 'jam82/molecule-ubuntu:18.04'
     - MOLECULE_DIST: 'jam82/molecule-ubuntu:20.04'
 
+before_install:
+  - python -m pip install --upgrade pip
+
 install:
-  - pip install --upgrade pip
   - pip install tox
 
 script:
