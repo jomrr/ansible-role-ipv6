@@ -2,10 +2,6 @@
 # role: ansible-role-ipv6
 # file: tasks/main.yml
 
-- name: "Set fact inside_container"
-  set_fact:
-    inside_container: "{{ (ansible_virtualization_role == 'guest' and ansible_virtualization_type in ['docker', 'lxc', 'podman']) | bool }}"
-
-- name: Import tasks for role ansible-role-ipv6
+- name: "Import tasks for role ansible-role-ipv6"
   import_tasks: tasks.yml
   when: ipv6_role_enabled | bool

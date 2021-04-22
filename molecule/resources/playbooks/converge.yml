@@ -4,9 +4,8 @@
 
 - name: Converge
   hosts: all
-  become: True
-  vars:
-    hosts_role_enabled: True
-  roles:
-    - role: ansible-role-ipv6
-    - role: hosts
+  become: true
+  tasks:
+    - name: "Include ansible-role-ipv6"
+      include_role:
+        name: "ansible-role-ipv6"

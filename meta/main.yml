@@ -3,9 +3,9 @@
 # file: meta/main.yml
 
 galaxy_info:
-  role_name: ansible-role-ipv6
+  role_name: ipv6
   author: jam82
-  description: Ansible role for enabling or disabling ipv6.
+  description: Ansible role for enabling or disabling IPv6 via sysctl.
   company: ''
 
   # If the issue tracker for your role is not on github, uncomment the
@@ -26,7 +26,8 @@ galaxy_info:
   platforms:
     - name: Alpine
       versions:
-        - 3
+        - 3.11
+        - 3.12
     - name: Amazon
       versions:
         - 2
@@ -39,9 +40,10 @@ galaxy_info:
       versions:
         - 9
         - 10
+        - 11
     - name: Fedora
       versions:
-        - 31
+        - 33
     - name: Oracle
       versions:
         - 7
@@ -56,7 +58,4 @@ galaxy_info:
 
   galaxy_tags: []
 
-  dependencies:
-    - src: https://github.com/jam82/ansible-role-hosts.git
-      name: hosts
-      version: master
+  dependencies: []

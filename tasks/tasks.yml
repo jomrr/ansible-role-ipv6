@@ -2,140 +2,26 @@
 # role: ansible-role-ipv6
 # file: tasks/tasks.yml
 
-- name: "Set os_family dependent variables"
-  include_vars: '{{ ansible_os_family }}.yml'
-
-- name: "Set distribution dependent variables"
-  include_vars: '{{ vars_file }}'
-  with_first_found:
-    - files:
-        - '{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml'
-        - '{{ ansible_distribution }}.yml'
-        - '{{ ansible_os_family }}-{{ ansible_distribution_major_version }}.yml'
-      skip: true
-  loop_control:
-    loop_var: vars_file
-
 - name: "Install packages for role ansible-role-ipv6"
   package:
     name: "{{ ipv6_packages }}"
     state: present
-
-- name: "Set fact for modprobe handler"
-  set_fact:
-    ipv6_modprobe_options: "{{ ipv6_disable_module | ternary('-r', '') }}"
-
-- name: "Check if kernel module ipv6 is builtin"
-  shell: |
-    set -o pipefail && \
-    test $(cat /lib/modules/$(uname -r)/modules.builtin | grep ipv6.ko | \
-    wc -l) > 0 && echo 1 || echo 0
-  args:
-    executable: /bin/bash
-  register: ipv6_check_builtin
-  changed_when: False
-
-- name: "Set fact for builtin kernel module"
-  set_fact:
-    ipv6_bultin: "{{ ipv6_check_builtin.stdout | bool }}"
-
-- name: "{{ ipv6_disable_module | ternary('Blacklist', 'Add') }} ipv6 kernel module"
-  lineinfile:
-    dest: "{{ ipv6_modprobe.path }}"
-    line: "{{ ipv6_modprobe.entry }}"
-    state: "{{ ipv6_disable_module | ternary('present','absent') }}"
-    create: yes
-    owner: "root"
-    group: "root"
-    mode: 0644
-  register: ip6_blacklist
-  notify: modprobe ipv6
-  when: not ipv6_bultin and not inside_container
-
-- name: "RedHat | Find /etc/sysconfig/network-scripts/ifcfg-* files"
-  find:
-    paths: /etc/sysconfig/network-scripts
-    patterns: 'ifcfg-*'
-    excludes: 'ifcfg-*.*.*'
-  register: ipv6_ifcfg
-  when: ansible_os_family == 'RedHat'
-
-- name: "RedHat | {{ ipv6_disable_module | ternary('Disable', 'Enable') }} ipv6 in /etc/sysconfig/network-scripts/ifcfg-*"
-  lineinfile:
-    dest: "{{ item[0].path }}"
-    regexp: "^{{ item[1].regexp }}"
-    line: "{{ item[1].line }}"
-    backup: yes
-    create: yes
-  loop: "{{ ipv6_ifcfg.files | product(ipv6_network_scripts) | list }}"
-  when: ansible_os_family == 'RedHat'
 
 - name: "Check if /proc/sys/net/ipv6/conf/all exists"
   stat:
     path: /proc/sys/net/ipv6/conf/all
   register: ipv6_net_conf_path
 
-- name: "{{ ipv6_disable_grub | ternary('Disable', 'Enable') }} IPv6 in grub cmdline"
-  block:
-    - name: "Check if /etc/default/grub exists"
-      stat:
-        path: /etc/default/grub
-      register: ipv6_grub_config
-
-    - name: "Check if /etc/default/grub contains ipv6.disable"
-      shell: "grep 'GRUB_CMDLINE_LINUX=.*ipv6.disable=.*' /etc/default/grub | wc -l"
-      register: ipv6_grub_config_present
-      changed_when: False
-      when: ipv6_grub_config.stat.exists
-
-    - name: "Insert ipv6.disable option in grub cmdline"
-      replace:
-        dest: /etc/default/grub
-        regexp: '^GRUB_CMDLINE_LINUX="(.*?)"$'
-        replace: 'GRUB_CMDLINE_LINUX="\1 ipv6.disable={{ ipv6_disable_grub | ternary(1,0) }}"'
-        backup: yes
-      register: ipv6_grub_cmdline_insert
-      when: ipv6_grub_config.stat.exists and ipv6_grub_config_present.stdout | int == 0
-
-    - name: "Modify ipv6.disable option in grub cmdline"
-      replace:
-        dest: /etc/default/grub
-        regexp: '^GRUB_CMDLINE_LINUX="(.*?)(ipv6.disable=[0-9])(.*?)"$'
-        replace: 'GRUB_CMDLINE_LINUX="\1ipv6.disable={{ ipv6_disable_grub | ternary(1,0) }}\3"'
-        backup: yes
-      register: ipv6_grub_cmdline_changed
-      when: ipv6_grub_config.stat.exists and ipv6_grub_config_present.stdout | int > 0
-
-    - name: "Remove /etc/sysctl.d/40-ipv6.conf if /proc/sys/net/ipv6 not present"
-      file:
-        path: /etc/sysctl.d/40-ipv6.conf
-        state: absent
-      when: (ipv6_disable_grub or not ipv6_net_conf_path.stat.exists)
-
-    - name: "Make grub config and optionally reboot when something changed"
-      block:
-        - name: "Make grub config"
-          command: "{{ ipv6_make_grubcfg_cmd }} -o {{ ipv6_make_grubcfg_outfile }}"
-
-        - name: "Reboot"
-          reboot:
-          when: ipv6_reboot_after_grub_change
-
-        - name: "{{ ipv6_disable_sysctl | ternary('Disable', 'Enable') }} IPv6 via sysctl"
-          sysctl:
-            name: net.ipv6.conf.all.disable_ipv6
-            value: "{{ ipv6_disable_sysctl | ternary(1, 0) }}"
-            sysctl_set: yes
-          when: not ipv6_reboot_after_grub_change and ipv6_net_conf_path.stat.exists
-      when: ipv6_grub_cmdline_insert is changed or ipv6_grub_cmdline_changed is changed
-  when: not inside_container
-
 - name: "{{ ipv6_disable_sysctl | ternary('Disable', 'Enable') }} IPv6 via sysctl (persistent)"
   sysctl:
-    name: net.ipv6.conf.all.disable_ipv6
+    name: "net.ipv6.conf.{{ item }}.disable_ipv6"
     value: "{{ ipv6_disable_sysctl | ternary(1, 0) }}"
     sysctl_set: yes
     state: present
     reload: yes
-    sysctl_file: "/etc/sysctl.d/40-ipv6.conf"
-  when: not ipv6_disable_grub and ipv6_net_conf_path.stat.exists
+    sysctl_file: "{{ ipv6_sysctl_file }}"
+  when: ipv6_net_conf_path.stat.exists
+  loop:
+    - all
+    - default
+    - lo

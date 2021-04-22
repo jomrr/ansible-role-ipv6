@@ -1,24 +1,23 @@
 ---
 # role: ansible-role-ipv6
-# file: molecule/default/molecule.yml
+# file: molecule/ci/molecule.yml
 
 dependency:
   name: galaxy
   options:
     role-file: requirements.yml
 driver:
-  name: podman
+  name: docker
 lint: |
   set -e
   yamllint .
   ansible-lint
-  flake8
 platforms:
-  - name: ipv6-default
-    image: ${MOLECULE_DIST:-"jam82/molecule-ubuntu:18.04"}
+  - name: ipv6-default${TOX_ENVNAME:-""}
+    image: ${MOLECULE_DIST:-"jam82/molecule-debian:11"}
     command: ${MOLECULE_DOCKER_CMD:-""}
-    pre_build_image: True
-    tty: False
+    pre_build_image: true
+    privileged: true
     tmpfs:
       - /tmp
       - /run
@@ -26,19 +25,13 @@ platforms:
       - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
 provisioner:
   name: ansible
-  log: True
+  log: true
   playbooks:
-    prepare: ../resources/playbooks/prepare.yml
     converge: ../resources/playbooks/converge.yml
+    verify: ../resources/playbooks/verify.yml
   inventory:
     group_vars:
       all:
-        ipv6_role_enabled: True
+        ipv6_role_enabled: true
 verifier:
-  name: testinfra
-  env:
-    PYTHONWARNINGS: "ignore"
-  directory: ../resources/tests
-  options:
-    v: True
-    sudo: True
+  name: ansible
