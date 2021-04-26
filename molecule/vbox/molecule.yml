@@ -82,8 +82,5 @@ provisioner:
     group_vars:
       all:
         ipv6_role_enabled: true
-        ipv6_disable_module: true
-        ipv6_disable_grub: true
-        ipv6_reboot_after_grub_change: false
 verifier:
   name: ansible
