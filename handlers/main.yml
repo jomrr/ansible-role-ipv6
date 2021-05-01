@@ -1,6 +1,0 @@
----
-# role: ansible-role-ipv6
-# file: handlers/main.yml
-
-- name: modprobe ipv6
-  command: "modprobe {{ ipv6_modprobe_options }} ipv6"

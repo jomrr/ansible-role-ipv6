@@ -2,25 +2,29 @@
 
 ![GitHub](https://img.shields.io/github/license/jam82/ansible-role-ipv6) [![Build Status](https://travis-ci.org/jam82/ansible-role-ipv6.svg?branch=master)](https://travis-ci.org/jam82/ansible-role-ipv6)
 
-**Ansible role for enabling or disabling ipv6.**
+**Ansible role for enabling or disabling IPv6 via sysctl.**
 
 ## Supported Platforms
 
-- Alpine 3.11
-- Amazonlinux 2
+- Alpine
+- Amazonlinux
 - Archlinux
-- CentOS 7, 8
-- Debian 9, 10
-- Fedora 31
-- Oraclelinux 7, 8
-- Suse 15
-- Ubuntu 18.04, 20.04
+- CentOS
+- Debian
+- Fedora
+- Manjaro
+- OracleLinux
+- OpenSuse Leap, Tumbleweed
+- Ubuntu
 
 ## Requirements
 
 Ansible 2.9 or higher is recommended.
 
 ## Variables
+
+Removed `GRUB`, `modprobe` and `ifcg-script` options for simplicity,
+as IPv6 module is builtin in the most kernels by default.
 
 Variables and defaults for this role:
 
@@ -31,27 +35,15 @@ Variables and defaults for this role:
 
 # The role is disabled by default, so you do not get in trouble.
 # Checked in tasks/main.yml which includes tasks.yml if enabled.
-# The default pattern of {role_name}_enabled is unhandy here...
-ipv6_role_enabled: False
-
-# Disable IPv6 via kernel parameter in the grub command line
-ipv6_disable_grub: False
-
-# Reboot immediately after GRUB_CMDLINE_LINUX changed
-ipv6_reboot_after_grub_change: False
-
-# Blacklist the IPv6 kernel module the ipv6 kernel module, if not built-in
-# and for os_family=RedHat set NETWORKING_IPV6 and IPV6INIT to "no".
-# NOTE: This setting is ignored when ipv6 module is built-in to the kernel.
-#       This is true for most modern operating systems, so you can leave it
-#       enabled safely to disable RedHat ifcfg settings for IPv6.
-ipv6_disable_module: True
+ipv6_role_enabled: false
 
 # Disable IPv6 via sysctl by default.
 # This only results to no IPv6 addresses being assigned to any interface.
 # The kernel module is still active, if this is your os default.
-# NOTE: When ipv6_disable_grub=true this has no effect.
-ipv6_disable_sysctl: True
+ipv6_disable_sysctl: true
+
+# Configuration file for sysctl
+ipv6_sysctl_file: "/etc/sysctl.d/98-ipv6.conf"
 ```
 
 ## Dependencies
@@ -66,10 +58,9 @@ ipv6_disable_sysctl: True
 # file: site.yml
 
 - hosts: all
-  become: True
+  become: true
   vars:
-    ipv6_role_enabled: True
-    ipv6_disable_grub: True
+    ipv6_role_enabled: true
   roles:
     - role: ansible-role-ipv6
 ```

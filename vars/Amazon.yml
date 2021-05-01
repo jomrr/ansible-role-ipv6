@@ -1,6 +1,0 @@
----
-# role: ansible-role-ipv6
-# file: vars/Amazon.yml
-
-ipv6_packages:
-  - procps-ng

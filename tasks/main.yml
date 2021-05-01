@@ -2,10 +2,29 @@
 # role: ansible-role-ipv6
 # file: tasks/main.yml
 
-- name: "Set fact inside_container"
-  set_fact:
-    inside_container: "{{ (ansible_virtualization_role == 'guest' and ansible_virtualization_type in ['docker', 'lxc', 'podman']) | bool }}"
+- name: "Import tasks for role ansible-role-ipv6"
+  block:
+    - name: "Install packages for role ansible-role-ipv6"
+      package:
+        name: "{{ ipv6_packages }}"
+        state: present
 
-- name: Import tasks for role ansible-role-ipv6
-  import_tasks: tasks.yml
+    - name: "Check if /proc/sys/net/ipv6/conf/all exists"
+      stat:
+        path: /proc/sys/net/ipv6/conf/all
+      register: ipv6_net_conf_path
+
+    - name: "{{ ipv6_disable | ternary('Disable', 'Enable') }} IPv6 via sysctl (persistent)"
+      sysctl:
+        name: "net.ipv6.conf.{{ item }}.disable_ipv6"
+        value: "{{ ipv6_disable | ternary(1, 0) }}"
+        sysctl_set: yes
+        state: present
+        reload: yes
+        sysctl_file: "{{ ipv6_sysctl_file }}"
+      when: ipv6_net_conf_path.stat.exists
+      loop:
+        - all
+        - default
+        - lo
   when: ipv6_role_enabled | bool

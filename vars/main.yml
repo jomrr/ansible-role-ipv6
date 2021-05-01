@@ -2,9 +2,16 @@
 # role: ansible-role-ipv6
 # file: vars/main.yml
 
-ipv6_make_grubcfg_cmd: 'grub2-mkconfig'
-ipv6_make_grubcfg_outfile: '/boot/grub2/grub.cfg'
+_ipv6_packages:
+  Alpine:
+    - procps
+  Archlinux:
+    - procps-ng
+  Debian:
+    - procps
+  RedHat:
+    - procps-ng
+  Suse:
+    - procps
 
-ipv6_network_scripts_state: ''
-
-ipv6_network_scripts: []
+ipv6_packages: "{{ _ipv6_packages[ansible_os_family] | default([]) }}"
