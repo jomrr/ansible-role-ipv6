@@ -1,6 +1,6 @@
 # ansible-role-ipv6
 
-![GitHub](https://img.shields.io/github/license/jam82/ansible-role-ipv6) [![Build Status](https://travis-ci.org/jam82/ansible-role-ipv6.svg?branch=master)](https://travis-ci.org/jam82/ansible-role-ipv6)
+![GitHub](https://img.shields.io/github/license/jam82/ansible-role-ipv6) [![Build Status](https://travis-ci.org/jam82/ansible-role-ipv6.svg?branch=main)](https://travis-ci.org/jam82/ansible-role-ipv6)
 
 **Ansible role for enabling or disabling IPv6 via sysctl.**
 
