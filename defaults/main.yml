@@ -10,7 +10,7 @@ ipv6_role_enabled: false
 # Disable IPv6 via sysctl by default.
 # This only results to no IPv6 addresses being assigned to any interface.
 # The kernel module is still active, if this is your os default.
-ipv6_disable_sysctl: true
+ipv6_disable: true
 
 # Configuration file for sysctl
 ipv6_sysctl_file: "/etc/sysctl.d/98-ipv6.conf"
