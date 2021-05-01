@@ -9,6 +9,10 @@ python:
 
 services: docker
 
+branches:
+  only:
+    - main
+
 cache:
   pip: true
   directories:
@@ -36,6 +40,5 @@ install:
 
 script:
   - tox -e $(echo py${TRAVIS_PYTHON_VERSION} | tr -d .)-an${TOX_ANSIBLE}-${TOX_IMG} -p 2 -o true
-  - |
-    rm -r .tox/py*/log/*                                                               
-    find . -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete
+  - rm -r .tox/py*/log/*
+  - find . -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete
