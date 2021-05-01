@@ -12,8 +12,9 @@
 - CentOS
 - Debian
 - Fedora
-- Oraclelinux
-- OpenSuse
+- Manjaro
+- OracleLinux
+- OpenSuse Leap, Tumbleweed
 - Ubuntu
 
 ## Requirements
