@@ -39,6 +39,6 @@ install:
   - pip install tox-travis
 
 script:
-  - tox -e $(echo py${TRAVIS_PYTHON_VERSION} | tr -d .)-an${TOX_ANSIBLE}-${TOX_IMG} -p 2 -o true
+  - tox -e $(echo py${TRAVIS_PYTHON_VERSION} | tr -d .)-an${TOX_ANSIBLE}-${TOX_IMG} -p
   - rm -r .tox/py*/log/*
   - find . -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete
