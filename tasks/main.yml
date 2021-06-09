@@ -18,9 +18,9 @@
       sysctl:
         name: "net.ipv6.conf.{{ item }}.disable_ipv6"
         value: "{{ ipv6_disable | ternary(1, 0) }}"
-        sysctl_set: yes
+        sysctl_set: true
         state: present
-        reload: yes
+        reload: true
         sysctl_file: "{{ ipv6_sysctl_file }}"
       when: ipv6_net_conf_path.stat.exists
       loop:
