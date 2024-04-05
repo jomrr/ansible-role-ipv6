@@ -1,0 +1,9 @@
+---
+# role: ansible-role-test
+# file: molecule/tox/collections.yml
+
+collections:
+  - community.docker
+  - community.general
+
+roles: []

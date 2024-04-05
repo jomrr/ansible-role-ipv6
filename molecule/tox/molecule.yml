@@ -14,8 +14,8 @@ lint: |
   ansible-lint
 platforms:
   - name: ipv6-${TOX_ENVNAME:-"default"}
-    image: ${MOLECULE_IMG:-"jam82/molecule-debian:11"}
-    command: ${MOLECULE_IMG_CMD:-""}
+    image: ${MOLECULE_IMG:-"jomrr/molecule-debian:11"}
+    command: ~
     pre_build_image: true
     privileged: true
     tmpfs:
