@@ -1,10 +1,6 @@
 ---
-# role: ansible-role-ipv6
+# role: jomrr.ipv6
 # file: defaults/main.yml
-
-# The role is disabled by default, so you do not get in trouble.
-# Checked in tasks/main.yml.
-ipv6_role_enabled: false
 
 # Disable IPv6 via sysctl by default.
 # This only results to no IPv6 addresses being assigned to any interface.

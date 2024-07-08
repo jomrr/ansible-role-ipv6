@@ -1,5 +1,5 @@
 ---
-# role: {{ role_name }}
+# role: jomrr.ipv6
 # file: molecule/default/molecule.yml
 
 dependency:

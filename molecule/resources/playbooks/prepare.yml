@@ -1,39 +1,42 @@
 ---
-# role: ansible-role-ipv6
+# role: jomrr.ipv6
 # file: molecule/resources/playbooks/prepare.yml
 
-- name: Prepare
+- name: "PLAYBOOK | Prepare"
   hosts: all
   become: true
   gather_facts: true
   tasks:
-    - name: "Update apk cache"
-      apk:
+    - name: "Update apk cache and installed packages"
+      community.general.apk:
+        available: true
         update_cache: true
+        upgrade: true
       when: ansible_pkg_mgr == "apk"
 
-    - name: "Update apt cache"
-      apt:
+    - name: "Update apt cache and installed packages"  # noqa: package-latest
+      ansible.builtin.apt:
+        force_apt_get: true
+        state: latest
         update_cache: true
       when: ansible_pkg_mgr == "apt"
 
-    - name: "Update dnf cache"
-      dnf:
+    - name: "Update dnf cache and installed packages"  # noqa: package-latest
+      ansible.builtin.dnf:
+        name: "*"
+        state: latest
         update_cache: true
       when: ansible_pkg_mgr == "dnf"
 
-    - name: "Update pacman cache"
-      pacman:
+    - name: "Update pacman cache and installed packages"
+      community.general.pacman:
         update_cache: true
+        upgrade: true
       when: ansible_pkg_mgr == "pacman"
 
-    - name: "Update yum cache"
-      yum:
-        update_cache: true
-      when: ansible_pkg_mgr == "yum"
-
-    - name: "Update zypper cache"
-      zypper:
-        name: sudo
+    - name: "Update zypper cache and installed packages"  # noqa: package-latest
+      community.general.zypper:
+        name: "*"
+        state: latest
         update_cache: true
       when: ansible_pkg_mgr == "zypper"

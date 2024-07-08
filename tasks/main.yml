@@ -1,30 +1,27 @@
 ---
-# role: ansible-role-ipv6
+# role: jomrr.ipv6
 # file: tasks/main.yml
 
-- name: "Import tasks for role ansible-role-ipv6"
-  block:
-    - name: "Install packages for role ansible-role-ipv6"
-      package:
-        name: "{{ ipv6_packages }}"
-        state: present
+- name: "Install packages for role ansible-role-ipv6"
+  ansible.builtin.package:
+    name: "{{ ipv6_packages }}"
+    state: present
 
-    - name: "Check if /proc/sys/net/ipv6/conf/all exists"
-      stat:
-        path: /proc/sys/net/ipv6/conf/all
-      register: ipv6_net_conf_path
+- name: "Check if /proc/sys/net/ipv6/conf/all exists"
+  ansible.builtin.stat:
+    path: /proc/sys/net/ipv6/conf/all
+  register: ipv6_net_conf_path
 
-    - name: "{{ ipv6_disable | ternary('Disable', 'Enable') }} IPv6 via sysctl (persistent)"
-      sysctl:
-        name: "net.ipv6.conf.{{ item }}.disable_ipv6"
-        value: "{{ ipv6_disable | ternary(1, 0) }}"
-        sysctl_set: true
-        state: present
-        reload: true
-        sysctl_file: "{{ ipv6_sysctl_file }}"
-      when: ipv6_net_conf_path.stat.exists
-      loop:
-        - all
-        - default
-        - lo
-  when: ipv6_role_enabled | bool
+- name: "Configure IPv6 via sysctl (persistent)"
+  ansible.posix.sysctl:
+    name: "net.ipv6.conf.{{ item }}.disable_ipv6"
+    value: "{{ ipv6_disable | ternary(1, 0) }}"
+    sysctl_set: true
+    state: present
+    reload: true
+    sysctl_file: "{{ ipv6_sysctl_file }}"
+  when: ipv6_net_conf_path.stat.exists
+  loop:
+    - all
+    - default
+    - lo

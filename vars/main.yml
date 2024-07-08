@@ -1,5 +1,5 @@
 ---
-# role: ansible-role-ipv6
+# role: jomrr.ipv6
 # file: vars/main.yml
 
 _ipv6_packages:

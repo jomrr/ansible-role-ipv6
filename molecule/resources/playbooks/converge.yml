@@ -1,5 +1,5 @@
 ---
-# role: ansible-role-ipv6
+# role: jomrr.ipv6
 # file: molecule/resources/playbooks/converge.yml
 
 - name: Converge
@@ -7,5 +7,5 @@
   become: true
   tasks:
     - name: "Include ansible-role-ipv6"
-      include_role:
+      ansible.builtin.include_role:
         name: "ansible-role-ipv6"
