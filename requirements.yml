@@ -1,0 +1,8 @@
+---
+# role: jomrr.ipv6
+# file: meta/requirements.yml
+
+collections:
+  - {'name': 'community.general'}
+
+roles: []

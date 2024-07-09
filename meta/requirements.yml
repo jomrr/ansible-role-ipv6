@@ -1,6 +1,0 @@
----
-# name: jomrr.ipv6
-# file: meta/requirements.yml
-
-- name: ansible.posix
-- name: community.general
